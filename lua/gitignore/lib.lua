@@ -405,6 +405,7 @@ function M.build(force)
     end
 
     table.insert(items, "build")
+    table.insert(items, "--path")
     M.gitignores = items
     local data = table.concat(items, "\n")
     M.write_file(ignores_file, data)
