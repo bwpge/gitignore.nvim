@@ -2,6 +2,13 @@ local L = require("gitignore.lib")
 
 local M = {}
 
+M.flags = {
+    "--build",
+    "-b",
+    "--path",
+    "-p",
+}
+
 local function unique(t)
     local seen = {}
     local items = {}
@@ -17,7 +24,7 @@ local function unique(t)
 end
 
 function M.command(ctx)
-    if ctx.fargs[1] == "build" then
+    if ctx.fargs[1] == "--build" or ctx.fargs[1] == "-b" then
         L.build(true)
         L.load_ignores()
         return
@@ -25,7 +32,7 @@ function M.command(ctx)
 
     local outname = nil
     for i, v in ipairs(ctx.fargs) do
-        if v == "--path" and ctx.fargs[i + 1] then
+        if (v == "--path" or v == "-p") and ctx.fargs[i + 1] then
             table.remove(ctx.fargs, i)
             outname = table.remove(ctx.fargs, i)
             vim.print(ctx.fargs)
@@ -37,6 +44,10 @@ function M.command(ctx)
     end
 
     local outfile = vim.fs.abspath(outname)
+    if L.file_exists(outfile) and not ctx.bang then
+        L.err("Gitignore: output file already exists (use ! to overwrite)")
+        return
+    end
     if not outfile then
         L.err("failed to resolve path '%s'", outname)
         return
@@ -64,16 +75,15 @@ function M.command(ctx)
 
     L.write_file(outfile, table.concat(output, "\n"))
     L.info("Wrote gitignore to '%s'", outfile)
-    if ctx.bang then
-        vim.cmd("e " .. outfile)
-    end
+
+    -- TODO: use plugin options for this
+    vim.cmd("split " .. outfile)
 end
 
-local function complete_fn(_, _, _)
-    -- line = line:gsub("^.- ", "")
-    -- if line:find(" ") then
-    --     return {}
-    -- end
+local function complete_fn(arglead, _, _)
+    if arglead:find("^%-") then
+        return M.flags
+    end
 
     return L.gitignores
 end

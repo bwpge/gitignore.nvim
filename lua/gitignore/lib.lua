@@ -306,7 +306,6 @@ M.default_gitignores = {
     "community/embedded/IAR_EWARM",
     "community/embedded/esp-idf",
     "community/embedded/uVision",
-    "build",
 }
 
 M.gitignores = {}
@@ -333,6 +332,10 @@ function M.write_file(path, data, mode)
         M.err("could not write to '%s'", path)
         return
     end
+end
+
+function M.file_exists(path)
+    return vim.fn.filereadable(path) == 1
 end
 
 function M.load_ignores()
@@ -394,7 +397,7 @@ local function get_ignores_api(path)
 end
 
 function M.build(force)
-    if not force and vim.fn.filereadable(ignores_file) == 1 then
+    if not force and M.file_exists(ignores_file) then
         return
     end
 
@@ -404,8 +407,6 @@ function M.build(force)
         return
     end
 
-    table.insert(items, "build")
-    table.insert(items, "--path")
     M.gitignores = items
     local data = table.concat(items, "\n")
     M.write_file(ignores_file, data)
