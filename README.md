@@ -21,16 +21,16 @@ When first installing, you may choose to run `Gitignore build` (see **Usage**).
 This plugin provides a single command, `Gitignore`:
 
 ```
-:Gitignore[!] NAME [PATH]
+:Gitignore[!] [--path PATH] NAME [NAME...]
 :Gitignore build
 ```
 
-### `:Gitignore[!] NAME [PATH]`
+### `:Gitignore[!] [--path PATH] NAME [NAME...]`
 
 Writes a gitignore file to optionally specified `PATH`.
 
-- `NAME`: The name of the gitignore to use (e.g., Lua, Python, C++, etc.)
-- `PATH`: (optional) output gitignore file, default is `.gitignore`
+- `--path PATH`: (optional) specify gitignore output file (default is `.gitignore`)
+- `NAME [NAME...]`: The name of the gitignore to use (e.g., Lua, Python, C++, etc.). Can be specified multiple times to concatenate multiple gitignores.
 - If `!` is provided, the target file is opened for editing using `:e <file>`
 
 ### `Gitignore build`
