@@ -76,8 +76,10 @@ function M.command(ctx)
     L.write_file(outfile, table.concat(output, "\n"))
     L.info("Wrote gitignore to '%s'", outfile)
 
-    -- TODO: use plugin options for this
-    vim.cmd("split " .. outfile)
+    local open_cmd = L.opts.open_cmd
+    if open_cmd and #open_cmd > 0 then
+        vim.cmd(open_cmd .. " " .. outfile)
+    end
 end
 
 local function complete_fn(arglead, _, _)
